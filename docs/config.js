@@ -2,5 +2,5 @@
 // Sau khi bật Colab lần đầu, dán địa chỉ ngrok của bạn vào BACKEND_URL, ví dụ:
 //   BACKEND_URL: "https://ten-cua-ban.ngrok-free.dev"
 window.TP_CONFIG = {
-  BACKEND_URL: ""
+  BACKEND_URL: "https://swung-suspect-splashy.ngrok-free.dev/"
 };
