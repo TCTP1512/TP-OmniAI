@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TP OmniAI</title>
+  <meta name="description" content="TP OmniAI — trò chuyện với AI qua OmniRoute.">
+  <meta name="theme-color" content="#0B7C86">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    // Đặt giao diện sáng/tối trước khi vẽ trang để tránh nhấp nháy.
+    try {
+      var s = JSON.parse(localStorage.getItem('tpomniai.v1.settings') || '{}');
+      document.documentElement.dataset.theme = s.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch (e) { document.documentElement.dataset.theme = 'light'; }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="config.js"></script>
+</head>
+<body>
+  <!-- Biểu tượng -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+      <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4.5h4V7M7 7l.8 12h8.4L17 7"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20l1.2-4.2L16.3 4.7a2.1 2.1 0 0 1 3 3L8.2 18.8z"/><path d="m14.5 6.5 3 3"/></symbol>
+      <symbol id="i-clip" viewBox="0 0 24 24"><path d="M20 11.5l-7.8 7.8a5 5 0 0 1-7-7l8-8a3.4 3.4 0 0 1 4.8 4.8l-8 8a1.8 1.8 0 0 1-2.6-2.6l7.3-7.3"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+      <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H10M15 8l4 4-4 4M19 12H9"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.5 3.5 5.5 3.5 8.5s-1 6-3.5 8.5c-2.5-2.5-3.5-5.5-3.5-8.5s1-6 3.5-8.5z"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9l-5.2 2.8 1-5.9L3.5 9.7l5.9-.8z"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+      <symbol id="i-orbit" viewBox="0 0 32 32">
+        <ellipse cx="16" cy="16" rx="13" ry="5.2" transform="rotate(-28 16 16)" fill="none" stroke="currentColor" stroke-width="1.9"/>
+        <ellipse cx="16" cy="16" rx="13" ry="5.2" transform="rotate(32 16 16)" fill="none" stroke="currentColor" stroke-width="1.9" opacity=".55"/>
+        <circle cx="16" cy="16" r="3.4" fill="currentColor"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Màn hình mật khẩu / trạng thái khởi động -->
+  <section id="gate" class="gate" hidden>
+    <div class="gate-card">
+      <svg class="gate-mark orbit-mark" aria-hidden="true"><use href="#i-orbit"/></svg>
+      <h1 class="gate-title">TP OmniAI</h1>
+      <p id="gateMsg" class="gate-msg"></p>
+      <form id="loginForm" class="gate-form" autocomplete="off" hidden>
+        <label class="sr-only" for="pw" data-i18n="password"></label>
+        <input id="pw" type="password" name="password" autocomplete="current-password" data-i18n-placeholder="password" required maxlength="200">
+        <button id="loginBtn" type="submit" class="btn primary" data-i18n="loginBtn"></button>
+      </form>
+      <button id="gateRetry" type="button" class="btn" hidden data-i18n="retry"></button>
+      <p id="gateErr" class="gate-err" role="alert" hidden></p>
+      <div class="gate-tools">
+        <button type="button" class="btn ghost small" id="gateLang"><svg class="ico"><use href="#i-globe"/></svg><span id="gateLangLabel"></span></button>
+        <button type="button" class="btn ghost small" id="gateTheme" aria-label="Theme"><svg class="ico"><use href="#i-moon"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="app" id="app" hidden>
+    <div class="scrim" id="scrim"></div>
+
+    <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+      <div class="side-head">
+        <div class="brand"><svg class="orbit-mark" aria-hidden="true"><use href="#i-orbit"/></svg><span>TP OmniAI</span></div>
+        <button class="icon-btn only-mobile" id="closeSidebar" type="button" data-i18n-label="close"><svg class="ico"><use href="#i-x"/></svg></button>
+      </div>
+      <button class="btn primary new-chat" id="newChat" type="button"><svg class="ico"><use href="#i-plus"/></svg><span data-i18n="newChat"></span></button>
+      <label class="search">
+        <svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>
+        <input id="search" type="search" data-i18n-placeholder="searchPlaceholder" data-i18n-label="searchPlaceholder" autocomplete="off">
+      </label>
+      <nav class="conv-wrap" aria-label="Conversations">
+        <ul id="convList" class="conv-list"></ul>
+        <p id="convEmpty" class="conv-empty" hidden></p>
+      </nav>
+      <div class="side-foot">
+        <p class="foot-note" data-i18n="storageNote"></p>
+        <div class="foot-row">
+          <button class="icon-btn" id="langBtn" type="button" data-i18n-title="language"><svg class="ico"><use href="#i-globe"/></svg><span id="langLabel" class="icon-label"></span></button>
+          <button class="icon-btn" id="themeBtn" type="button" data-i18n-title="theme"><svg class="ico" id="themeIcon"><use href="#i-moon"/></svg></button>
+          <button class="icon-btn" id="statusBtn" type="button" data-i18n-title="checkConnection"><svg class="ico"><use href="#i-pulse"/></svg><span class="dot" id="statusDot" data-state="unknown"></span></button>
+          <button class="icon-btn" id="settingsBtn" type="button" data-i18n-title="settings"><svg class="ico"><use href="#i-gear"/></svg></button>
+          <button class="icon-btn" id="logoutBtn" type="button" data-i18n-title="logout"><svg class="ico"><use href="#i-logout"/></svg></button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn only-mobile" id="openSidebar" type="button" data-i18n-label="menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+        <div class="model-pick">
+          <button id="modelBtn" class="model-btn" type="button" data-i18n-title="modelPickerTitle"><span id="modelBtnLabel"></span><svg class="ico"><use href="#i-chevron"/></svg></button>
+        </div>
+        <button class="pill" id="statusPill" type="button" data-state="unknown"><span class="dot" data-state="unknown"></span><span id="statusPillText"></span></button>
+        <button class="icon-btn" id="downloadBtn" type="button" data-i18n-title="download"><svg class="ico"><use href="#i-download"/></svg></button>
+      </header>
+
+      <div class="thread-wrap" id="threadWrap">
+        <div class="thread" id="thread" aria-live="polite"></div>
+      </div>
+
+      <footer class="composer-wrap">
+        <div class="composer" id="composer">
+          <ul class="chips" id="chips" hidden></ul>
+          <p class="attach-note" id="attachNote" hidden data-i18n="attachNotice"></p>
+          <textarea id="input" rows="1" data-i18n-placeholder="inputPlaceholder" data-i18n-label="inputPlaceholder" maxlength="100000"></textarea>
+          <div class="composer-row">
+            <button class="icon-btn" id="attachBtn" type="button" data-i18n-title="attach"><svg class="ico"><use href="#i-clip"/></svg></button>
+            <input id="fileInput" type="file" multiple hidden>
+            <span class="spacer"></span>
+            <button class="send" id="sendBtn" type="button" data-i18n-title="send"><svg class="ico"><use href="#i-send"/></svg></button>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Hộp thoại -->
+  <dialog id="dlgRename" class="dlg">
+    <form method="dialog" id="renameForm">
+      <h2 data-i18n="renameTitle"></h2>
+      <input id="renameInput" type="text" maxlength="120" autocomplete="off" data-i18n-label="renameTitle">
+      <div class="dlg-actions">
+        <button class="btn" value="cancel" type="button" id="renameCancel" data-i18n="cancel"></button>
+        <button class="btn primary" value="ok" type="submit" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgDelete" class="dlg">
+    <form method="dialog" id="deleteForm">
+      <h2 data-i18n="deleteTitle"></h2>
+      <p id="deleteBody"></p>
+      <div class="dlg-actions">
+        <button class="btn" type="button" id="deleteCancel" data-i18n="cancel"></button>
+        <button class="btn danger" value="ok" type="submit" data-i18n="delete"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgStatus" class="dlg wide">
+    <h2 data-i18n="statusTitle"></h2>
+    <ul class="checks" id="checks"></ul>
+    <p id="statusHint" class="hint"></p>
+    <div class="dlg-actions">
+      <button class="btn" type="button" id="statusRecheck" data-i18n="recheck"></button>
+      <button class="btn" type="button" id="statusProbe" data-i18n="testModel"></button>
+      <button class="btn primary" type="button" id="statusClose" data-i18n="close"></button>
+    </div>
+  </dialog>
+
+  <dialog id="dlgModels" class="dlg picker">
+    <div class="picker-head">
+      <h2 data-i18n="modelPickerTitle"></h2>
+      <button class="icon-btn" id="modelsClose" type="button" data-i18n-label="close"><svg class="ico"><use href="#i-x"/></svg></button>
+    </div>
+    <input id="modelSearch" type="search" autocomplete="off" data-i18n-placeholder="modelSearch" data-i18n-label="modelSearch">
+    <div id="modelFilters" class="filters" role="tablist"></div>
+    <div id="modelList" class="model-list" role="listbox"></div>
+    <p id="modelCount" class="hint"></p>
+  </dialog>
+
+  <dialog id="dlgSettings" class="dlg wide">
+    <h2 data-i18n="settingsTitle"></h2>
+    <label for="systemPrompt" class="field-label" data-i18n="systemPromptLabel"></label>
+    <textarea id="systemPrompt" rows="4" maxlength="4000"></textarea>
+    <p class="hint" data-i18n="systemPromptHelp"></p>
+    <div class="settings-actions">
+      <button class="btn" id="exportBtn" type="button"><svg class="ico"><use href="#i-download"/></svg><span data-i18n="exportHistory"></span></button>
+      <button class="btn" id="importBtn" type="button"><svg class="ico"><use href="#i-upload"/></svg><span data-i18n="importHistory"></span></button>
+      <input id="importInput" type="file" accept=".json,application/json" hidden>
+    </div>
+    <p id="storageInfo" class="hint"></p>
+    <div class="dlg-actions">
+      <button class="btn" type="button" id="settingsCancel" data-i18n="cancel"></button>
+      <button class="btn primary" type="button" id="settingsSave" data-i18n="save"></button>
+    </div>
+  </dialog>
+
+  <dialog id="dlgImage" class="dlg lightbox">
+    <img id="lightboxImg" alt="">
+    <button class="btn" type="button" id="lightboxClose" data-i18n="close"></button>
+  </dialog>
+
+  <div class="drop-overlay" id="dropOverlay" hidden>
+    <div class="drop-card"><svg class="ico"><use href="#i-upload"/></svg><strong data-i18n="dropHere"></strong><span data-i18n="dropHint"></span></div>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
